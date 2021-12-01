@@ -8,7 +8,15 @@ import (
 	"strconv"
 )
 
-func readInput(path string) ([]string, error) {
+func sum(array []int) int {
+	result := 0
+	for _, v := range array {
+		result += v
+	}
+	return result
+}
+
+func readInput(path string) ([]int, error) {
 	input, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -20,7 +28,18 @@ func readInput(path string) ([]string, error) {
 	for buffer.Scan() {
 		inputLines = append(inputLines, buffer.Text())
 	}
-	return inputLines, buffer.Err()
+
+	var lines []int
+
+	for _, s := range inputLines {
+		converted, err := strconv.Atoi(s)
+		if err != nil {
+			return lines, err
+		}
+		lines = append(lines, converted)
+	}
+
+	return lines, buffer.Err()
 }
 
 func main() {
@@ -38,13 +57,8 @@ func main() {
 			continue
 		}
 
-		current, cErr := strconv.Atoi(lines[i])
-		if cErr != nil {
-			fmt.Fprintln(os.Stderr, "Line of input is not a number", cErr)
-			return
-		}
-
-		prev, _ := strconv.Atoi(lines[i-1])
+		current := lines[i]
+		prev := lines[i-1]
 
 		if current > prev {
 			fmt.Printf("Found increase from %d to %d at index %d\n", current, prev, i)
@@ -53,4 +67,21 @@ func main() {
 	}
 
 	fmt.Printf("Part 1 result: %d increases!\n", increases)
+
+	var windowIncreases = 0
+
+	for i := range lines {
+		if i == 0 {
+			continue
+		}
+		window := sum(lines[i : i+3])
+		prevWindow := sum(lines[i-1 : i+2])
+
+		if window > prevWindow {
+			fmt.Printf("Found increase from %d to %d at index %d\n", window, prevWindow, i)
+			windowIncreases++
+		}
+	}
+
+	fmt.Printf("Part 2 result: %d increases!\n", windowIncreases)
 }
