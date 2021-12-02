@@ -81,7 +81,7 @@ func readInput(path string) ([]command, error) {
 	return lines, buffer.Err()
 }
 
-func part1(lines []command) {
+func part1(lines []command) int {
 	horizontal := 0
 	depth := 0
 
@@ -105,9 +105,10 @@ func part1(lines []command) {
 	fmt.Printf("Depth: %d\n", depth)
 	fmt.Printf("Horizontal: %d\n", horizontal)
 	fmt.Printf("Result: %d\n", depth*horizontal)
+	return depth * horizontal
 }
 
-func part2(lines []command) {
+func part2(lines []command) int {
 	horizontal := 0
 	depth := 0
 	aim := 0
@@ -132,6 +133,7 @@ func part2(lines []command) {
 	fmt.Printf("Depth: %d\n", depth)
 	fmt.Printf("Horizontal: %d\n", horizontal)
 	fmt.Printf("Result: %d\n", depth*horizontal)
+	return depth * horizontal
 }
 
 func main() {
