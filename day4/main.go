@@ -128,19 +128,22 @@ func hasBoardWon(numbers []int, board [][]int) bool {
 	return false
 }
 
-func play(numbersToPlay []int, boards map[int][][]int) ([]int, [][]int) {
+func play(numbersToPlay []int, boards map[int][][]int) ([]int) {
+	var winningScores []int
+
 	for i := range numbersToPlay {
 		// todo: could we skip the first 4 as you need 5 to win?
 		numbersToPlaySoFar := numbersToPlay[:i]
 
-		for _, board := range boards {
+		for b, board := range boards {
 			if hasBoardWon(numbersToPlaySoFar, board) {
-				return numbersToPlaySoFar, board
+				winningScores = append(winningScores, calculateScore(numbersToPlaySoFar, board))
+				delete(boards, b)
 			}
 		}
 	}
 
-	return nil, nil
+	return winningScores
 }
 
 func calculateScore(winningNumbers []int, winningBoard [][]int) int {
@@ -166,16 +169,25 @@ func part1() {
 	fmt.Printf("Numbers: %d\n", len(numbers))
 	fmt.Printf("Boards count: %d\n", len(boards))
 
-	winningNumbers, winningBoard := play(numbers, boards)
+	winningScores := play(numbers, boards)
 
-	fmt.Printf("Winning numbers: %+v\n", winningNumbers)
-	fmt.Printf("Winning board: %+v\n", winningBoard)
+	fmt.Printf("Winning numbers: %+v\n", winningScores)
 
-	score := calculateScore(winningNumbers, winningBoard)
+	fmt.Printf("Score: %d\n", winningScores[0])
+}
 
-	fmt.Printf("Score: %d\n", score)
+func part2() {
+	lines, _ := readFileLines("./day4/input")
+
+	numbers, boards, _ := parseIntoNumbersAndBoards(lines)
+
+	winningScores := play(numbers, boards)
+
+	fmt.Printf("Winning scores: %+v\n", winningScores)
+	fmt.Printf("Last score: %d\n", winningScores[len(winningScores) -1])
 }
 
 func main() {
 	part1()
+	part2()
 }

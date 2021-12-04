@@ -20,10 +20,20 @@ func TestParseIntoNumbersAndBoards(t *testing.T) {
 
 func TestPart1(t *testing.T) {
 	numbers, boards, _ := parseIntoNumbersAndBoards(strings.Split(example, "\n"))
-	winningNumbers, winningBoard := play(numbers, boards)
-	score := calculateScore(winningNumbers, winningBoard)
+	winningScores := play(numbers, boards)
 
-	if score != 4512 {
-		t.Fatalf("Expected result to be 4512 but got %d", score)
+	if winningScores[0] != 4512 {
+		t.Fatalf("Expected result to be 4512 but got %d", winningScores[0])
+	}
+}
+
+func TestPart2(t *testing.T) {
+	numbers, boards, _ := parseIntoNumbersAndBoards(strings.Split(example, "\n"))
+	winningScores := play(numbers, boards)
+	
+	winningScore := winningScores[len(winningScores) -1]
+
+	if winningScore != 1924 {
+		t.Fatalf("Expected resultto be 1924 but got %d", winningScore)
 	}
 }
