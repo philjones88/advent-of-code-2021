@@ -77,9 +77,55 @@ func computePart1(inputLines []string) int {
 	return count
 }
 
+func computePart2(inputLines []string) int {
+	lines := make(map[string]int)
+
+	for _, line := range inputLines {
+		var start [2]int
+		var end [2]int
+
+		fmt.Sscanf(line, "%d,%d -> %d,%d", &(start[0]), &(start[1]), &(end[0]), &(end[1]))
+
+		// Do vertical + horizontal + diagonal
+		if start[0] != end[0] || start[1] != end[1] {
+			// Push start manually
+			lines[fmt.Sprintf("%d,%d", start[0], start[1])]++
+
+			for start[0] != end[0] || start[1] != end[1] {
+				if start[0] > end[0] {
+					start[0]--
+				} else if start[0] < end[0] {
+					start[0]++
+				}
+
+				if start[1] > end[1] {
+					start[1]--
+				} else if start[1] < end[1] {
+					start[1]++
+				}
+
+				lines[fmt.Sprintf("%d,%d", start[0], start[1])]++
+			}
+		}
+	}
+
+	count := 0
+
+	for _, line := range lines {
+		if line >= 2 {
+			count++
+		}
+	}
+	return count
+}
+
 func main() {
 	inputLines, _ := readFileLines("./day5/input")
 	part1 := computePart1(inputLines)
 
 	fmt.Printf("Part 1 = %d\n", part1)
+
+	part2 := computePart2(inputLines)
+
+	fmt.Printf("Part 2 = %d\n", part2)
 }
