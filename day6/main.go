@@ -68,23 +68,34 @@ func countFish(fish map[int]int) int {
 	return fishCount
 }
 
+func fishDay(fish map[int]int) map[int]int {
+	preStage0 := fish[0]
+
+	for stage := 0; stage <= 8; stage++ {
+		if stage == 0 {
+			continue
+		}
+		fish[stage-1] = fish[stage-1] + fish[stage]
+		fish[stage] = 0
+
+	}
+
+	fish[6] = fish[6] + preStage0
+	fish[8] = fish[8] + preStage0
+	fish[0] = fish[0] - preStage0
+	return fish
+}
+
 func part1(fish map[int]int) map[int]int {
 	for day := 1; day <= 80; day++ {
+		fish = fishDay(fish)
+	}
+	return fish
+}
 
-		preStage0 := fish[0]
-
-		for stage := 0; stage <= 8; stage++ {
-			if stage == 0 {
-				continue
-			}
-			fish[stage-1] = fish[stage-1] + fish[stage]
-			fish[stage] = 0
-
-		}
-
-		fish[6] = fish[6] + preStage0
-		fish[8] = fish[8] + preStage0
-		fish[0] = fish[0] - preStage0
+func part2(fish map[int]int) map[int]int {
+	for day:=1; day <= 256; day++ {
+		fish = fishDay(fish)
 	}
 	return fish
 }
@@ -92,17 +103,31 @@ func part1(fish map[int]int) map[int]int {
 func main() {
 	numbers, _ := readFileNumbers("./day6/input")
 
-	fish := computeStartingFishStages(numbers)
+	fishPart1 := computeStartingFishStages(numbers)
 
-	prettyPrintFishs(fish)
+	prettyPrintFishs(fishPart1)
 
-	resultFish := part1(fish)
+	resultFishPart1 := part1(fishPart1)
 
 	fmt.Print("------\n")
 
-	prettyPrintFishs(resultFish)
+	prettyPrintFishs(resultFishPart1)
 
-	result := countFish(fish)
+	resultPart1 := countFish(fishPart1)
 
-	fmt.Printf("Part 1 = %d\n", result)
+	fmt.Printf("Part 1 = %d\n", resultPart1)
+
+	fishPart2 := computeStartingFishStages(numbers)
+
+	prettyPrintFishs(fishPart2)
+
+	resultFishPart2 := part2(fishPart2)
+
+	fmt.Print("------\n")
+
+	prettyPrintFishs(resultFishPart2)
+
+	resultPart2 := countFish(resultFishPart2)
+
+	fmt.Printf("Part 2 = %d\n", resultPart2)
 }
