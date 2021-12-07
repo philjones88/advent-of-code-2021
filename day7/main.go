@@ -54,7 +54,7 @@ func part1(crabPositions []int) int {
 	sort.Ints(crabPositions)
 
 	// Could brute force? but find the most common crab "line", this will save time looping
-	average := funk.SumInt(crabPositions) / len(crabPositions)
+	average := funk.SumInt(crabPositions)/len(crabPositions) + 1
 
 	minCrabPosition := funk.MinInt(crabPositions)
 
@@ -66,7 +66,36 @@ func part1(crabPositions []int) int {
 			cost += int(math.Abs(float64(crabPosition - i)))
 		}
 		bestPossibleCrabPositions[i] = cost
+	}
 
+	bestFuelSolution := bestPossibleCrabPositions[0]
+
+	for _, fuel := range bestPossibleCrabPositions {
+		if fuel < bestFuelSolution {
+			bestFuelSolution = fuel
+		}
+	}
+
+	return bestFuelSolution
+}
+
+func part2(crabPositions []int) int {
+	sort.Ints(crabPositions)
+
+	// Could brute force? but find the most common crab "line", this will save time looping
+	average := funk.SumInt(crabPositions)/len(crabPositions) + 1
+
+	minCrabPosition := funk.MinInt(crabPositions)
+
+	bestPossibleCrabPositions := make(map[int]int)
+
+	for i := minCrabPosition; i <= average; i++ {
+		cost := 0
+		for _, crabPosition := range crabPositions {
+			moveAmount := int(math.Abs(float64(crabPosition - i)))
+			cost += (moveAmount * (moveAmount + 1)) / 2
+		}
+		bestPossibleCrabPositions[i] = cost
 	}
 
 	bestFuelSolution := bestPossibleCrabPositions[0]
@@ -82,7 +111,11 @@ func part1(crabPositions []int) int {
 
 func main() {
 	stringNumbers, _ := readFileNumbers("./day7/input")
-	result := part1(stringNumbers)
+	part1Result := part1(stringNumbers)
 
-	fmt.Printf("Part 1 = %d\n", result)
+	fmt.Printf("Part 1 = %d\n", part1Result)
+
+	part2Result := part2(stringNumbers)
+
+	fmt.Printf("Part 2 = %d\n", part2Result)
 }
