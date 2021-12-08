@@ -4,7 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
+	"strconv"
 	"strings"
+
+	"github.com/thoas/go-funk"
 )
 
 const (
@@ -50,6 +54,14 @@ const (
 // 8 = 7 (unique)
 // 9 = 6
 
+func stringToInt(str string) int {
+	parsed, err := strconv.Atoi(str)
+	if err != nil {
+		panic("Rut roh! Not a number")
+	}
+	return parsed
+}
+
 func readFileLines(path string) ([]string, error) {
 	input, err := os.Open(path)
 	if err != nil {
@@ -82,6 +94,161 @@ func part1(inputLines []string) int {
 	return counter
 }
 
+func part2(inputLines []string) int {
+	totalSum := 0
+
+	for _, inputLine := range inputLines {
+		inputPartsSplit := strings.Split(inputLine, " | ")
+
+		signalPatterns := strings.Fields(strings.TrimSpace(inputPartsSplit[0]))
+
+		// Sort them
+		for i, signalPattern := range signalPatterns {
+			temp := strings.Split(signalPattern, "")
+			sort.Strings(temp)
+			signalPatterns[i] = strings.Join(temp, "")
+		}
+
+		outputPatterns := strings.Fields(strings.TrimSpace(inputPartsSplit[1]))
+
+		for i, outputPattern := range outputPatterns {
+			temp := strings.Split(outputPattern, "")
+			sort.Strings(temp)
+			outputPatterns[i] = strings.Join(temp, "")
+		}
+
+		signalPatternMap := make(map[int]string)
+
+		// First find the easy ones, these help diff the harder numbers
+		for _, signalPattern := range signalPatterns {
+			if len(signalPattern) == 2 {
+				signalPatternMap[1] = signalPattern
+			}
+
+			if len(signalPattern) == 4 {
+				signalPatternMap[4] = signalPattern
+			}
+
+			if len(signalPattern) == 3 {
+				signalPatternMap[7] = signalPattern
+			}
+
+			if len(signalPattern) == 7 {
+				signalPatternMap[8] = signalPattern
+			}
+		}
+
+		one := strings.Split(signalPatternMap[1], "")
+		four := strings.Split(signalPatternMap[4], "")
+
+		// 0 == 1 = 0
+		// 6 == 1 = 1
+		// 9 == 1 = 0
+
+		// find 6
+		for _, signalPattern := range signalPatterns {
+			if len(signalPattern) == 6 {
+				signalPatternSplit := strings.Split(signalPattern, "")
+				if o, _ := funk.DifferenceString(one, signalPatternSplit); len(o) == 1 {
+					signalPatternMap[6] = signalPattern
+					break
+				}
+			}
+		}
+
+		// 0 == 4 = 1
+		// 9 == 4 = 2
+
+		// find 0
+		for _, signalPattern := range signalPatterns {
+			if len(signalPattern) == 6 {
+				if signalPattern == signalPatternMap[6] {
+					continue
+				}
+
+				signalPatternSplit := strings.Split(signalPattern, "")
+
+				if o, _ := funk.DifferenceString(four, signalPatternSplit); len(o) == 1 {
+					signalPatternMap[0] = signalPattern
+					break
+				}
+			}
+		}
+
+		// find 9
+		for _, signalPattern := range signalPatterns {
+			if len(signalPattern) == 6 {
+				if signalPattern == signalPatternMap[0] || signalPattern == signalPatternMap[6] {
+					continue
+				}
+				signalPatternMap[9] = signalPattern
+				break
+			}
+		}
+
+		// 2 == 6 = 3
+		// 3 == 6 = 3
+		// 5 == 6 = 1
+
+		// find 5
+		six := strings.Split(signalPatternMap[6], "")
+		for _, signalPattern := range signalPatterns {
+			if len(signalPattern) == 5 {
+				signalPatternSplit := strings.Split(signalPattern, "")
+
+				if o, _ := funk.DifferenceString(six, signalPatternSplit); len(o) == 1 {
+					signalPatternMap[5] = signalPattern
+					break
+				}
+			}
+		}
+
+		// 3 == 5 = 2
+		// 2 == 5 = 2
+
+		// find 3
+		five := strings.Split(signalPatternMap[5], "")
+		for _, signalPattern := range signalPatterns {
+			if len(signalPattern) == 5 {
+				signalPatternSplit := strings.Split(signalPattern, "")
+
+				if o, _ := funk.DifferenceString(five, signalPatternSplit); len(o) == 1 {
+					signalPatternMap[3] = signalPattern
+					break
+				}
+			}
+		}
+
+		// find 2
+		for _, signalPattern := range signalPatterns {
+			if len(signalPattern) == 5 {
+				signalPatternSplit := strings.Split(signalPattern, "")
+
+				if o, _ := funk.DifferenceString(five, signalPatternSplit); len(o) == 2 {
+					signalPatternMap[2] = signalPattern
+					break
+				}
+			}
+		}
+
+		rowSum := ""
+
+		for _, outputPattern := range outputPatterns {
+			temp := ""
+			for signalKey, signalVal := range signalPatternMap {
+				if outputPattern == signalVal {
+					temp = temp + strconv.Itoa(signalKey)
+				}
+			}
+			rowSum = rowSum + temp
+		}
+
+		totalSum += stringToInt(rowSum)
+	}
+
+	return totalSum
+}
+
 func main() {
 	exampleLines, _ := readFileLines("./day8/input")
 	var inputLines []string
@@ -93,4 +260,8 @@ func main() {
 	result := part1(inputLines)
 
 	fmt.Printf("Part 1: %d\n", result)
+
+	resultPart2 := part2(exampleLines)
+
+	fmt.Printf("Part 2: %d\n", resultPart2)
 }
