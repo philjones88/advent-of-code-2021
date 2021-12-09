@@ -167,12 +167,12 @@ func getBasinCoOrdinates(coords CoOrdinates, heightMapLines [][]int) []CoOrdinat
 
 func part1(heightMapLines [][]int) int {
 	risk := 0
-	for row := 0; row < len(heightMapLines); row++ {
-		for col := 0; col < len(heightMapLines[row]); col++ {
+	for x := 0; x < len(heightMapLines); x++ {
+		for y := 0; y < len(heightMapLines[x]); y++ {
 			// If N + E + S + W are all "true" (lowest)
-			if isLowPoint, _ := checkPosition(row, col, heightMapLines); isLowPoint {
+			if isLowPoint, _ := checkPosition(x, y, heightMapLines); isLowPoint {
 				// "risk level" is 1 plus its height
-				risk += heightMapLines[row][col] + 1
+				risk += heightMapLines[x][y] + 1
 			}
 		}
 	}
@@ -182,10 +182,10 @@ func part1(heightMapLines [][]int) int {
 func part2(heightMapLines [][]int) int {
 	var lowPointBasins []CoOrdinates
 
-	for row := 0; row < len(heightMapLines); row++ {
-		for col := 0; col < len(heightMapLines[row]); col++ {
-			if isLowPoint, _ := checkPosition(row, col, heightMapLines); isLowPoint {
-				lowPointBasins = append(lowPointBasins, CoOrdinates{x: row, y: col})
+	for x := 0; x < len(heightMapLines); x++ {
+		for y := 0; y < len(heightMapLines[x]); y++ {
+			if isLowPoint, _ := checkPosition(x, y, heightMapLines); isLowPoint {
+				lowPointBasins = append(lowPointBasins, CoOrdinates{x: x, y: y})
 			}
 		}
 	}
